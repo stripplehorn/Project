@@ -1,0 +1,86 @@
+> # Final Project code with results.
+> c863 = read.csv("Desktop/Project/Data/y2hchd1863.csv")
+> head(c863)
+  Plate Rtf1      Area
+1    LW   EV 1.0158730
+2    LW   EV 0.8941176
+3    LW   EV 1.1188811
+4    LW   WT 0.8571429
+5    LW   WT 0.9411765
+6    LW   WT 0.9650350
+> #Generate a histogram to visually check for a normal distribution.
+> hist(c863$Area, breaks=30)
+> #Perform a Shapiro-Wilk test to check the normality of the distribution.
+> shapiro.test(c863$Area)
+
+	Shapiro-Wilk normality test
+
+data:  c863$Area
+W = 0.80432, p-value = 6.105e-08
+
+> #Load ggplot.
+> library(ggplot2)
+> #Load data for the Kruskal-Wallis test.
+> chd1data = read.csv("Desktop/Project/Data/ratio863.csv")
+> chd1data
+     Rtf1        Area
+1      EV 0.000000000
+2      EV 0.000000000
+3      EV 0.000000000
+4      WT 0.922222222
+5      WT 0.785326087
+6      WT 0.746532648
+7    3-5A 0.000000000
+8    3-5A 0.000000000
+9    3-5A 0.000000000
+10   5-7A 0.000000000
+11   5-7A 0.001415605
+12   5-7A 0.000000000
+13   8-9A 0.000000000
+14   8-9A 0.000000000
+15   8-9A 0.000000000
+16    11A 0.000000000
+17    11A 0.000000000
+18    11A 0.063829787
+19 15-16A 0.959372486
+20 15-16A 0.459404276
+21 15-16A 0.697060932
+22 18-19A 0.924358892
+23 18-19A 0.476942628
+24 18-19A 0.751358025
+25 21-22A 0.499286326
+26 21-22A 0.655734616
+27 21-22A 0.650909091
+28 25-27A 1.060560032
+29 25-27A 0.691693962
+30 25-27A 0.679337349
+31 28-30A 0.888681882
+32 28-30A 0.776816737
+33 28-30A 0.867878788
+> #Put the data in the correct order of the alanine mutants.
+> orderedmutants<- factor(chd1data$Rtf1, levels=c("EV","WT","3-5A", "5-7A", "8-9A", "11A", "15-16A", "18-19A","21-22A", "25-27A", "28-30A"))
+> #Ggplot function for all three replicates of Y2H Chd1(863-1468) and all Rtf1 mutants.
+> ggplot(chd1data, aes(x=orderedmutants, y=Area)) + geom_point(position=position_jitter(width=0.4), color="darkcyan") + theme_bw() + ggtitle("Yeast Two-Hybrid Growth of Rtf1 Alanine Scanning Mutants") +theme(plot.title = element_text(hjust = 0.5)) + xlab("Alanine Scanning Mutants in Rtf1") + ylab("Relative Growth Area")
+> #Take the square root of the area data for a data transformation. 
+> sqrtchd1863 <- data.frame(Square_Root = c(c863$Area))
+> sqrtdata <- sqrt(sqrtchd1863)
+> head(sqrtdata)
+  Square_Root
+1   1.0079053
+2   0.9455779
+3   1.0577718
+4   0.9258201
+5   0.9701425
+6   0.9823619
+> # Visually check the distribution of the square root transformed data.
+> hist(sqrtdata$Square_Root, breaks=30, main="Square Root Transformation of Area Growth Data", xlab="Area of Growth")
+> #Take standard deviation.
+> sd(chd1data$Area)
+[1] 0.3966907
+> #Perform Kruskal-Wallis test. 
+> kruskal.test(Area~ Rtf1, data=chd1data)
+
+	Kruskal-Wallis rank sum test
+
+data:  Area by Rtf1
+Kruskal-Wallis chi-squared = 27.263, df = 10, p-value = 0.002366
